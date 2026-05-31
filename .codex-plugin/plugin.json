@@ -1,7 +1,7 @@
 {
   "name": "gemini-writing-copilot",
   "version": "0.2.1+codex.20260531111421",
-  "description": "Proactively route Codex prose work to Antigravity/Gemini with auto context, templates, and quality checks.",
+  "description": "Proactively route Codex prose work, including release and PR publishing prose, to Antigravity/Gemini with auto context, templates, and quality checks.",
   "author": {
     "name": "Park Chanwoo",
     "url": "https://github.com/Meapri"
@@ -19,8 +19,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Gemini Writing Copilot",
-    "shortDescription": "Proactively route prose work to Antigravity/Gemini.",
-    "longDescription": "Gemini Writing Copilot makes Codex more willing to hand off prose deliverables to Google Antigravity's local agy CLI by default, with the older Gemini Web cookie client kept as a fallback. Its skill routing is tuned for drafting, rewriting, polishing, translation, summaries, docs prose, PR descriptions, release notes, emails, announcements, blog posts, proposals, and product copy. It now adds task auto-detection, automatic style profile defaults, Gemini-authored task templates, safe git project-context collection, routing evals, and a source-grounding quality gate for prose work while leaving coding, debugging, and architectural judgment to Codex.",
+    "shortDescription": "Route prose work, including release notes, to Antigravity/Gemini.",
+    "longDescription": "Gemini Writing Copilot makes Codex more willing to hand off prose deliverables to Google Antigravity's local agy CLI by default, with the older Gemini Web cookie client kept as a fallback. Its skill routing is tuned for drafting, rewriting, polishing, translation, summaries, docs prose, PR descriptions, GitHub release bodies, release notes, changelogs, emails, announcements, blog posts, proposals, and product copy. Mixed engineering flows still route public-facing prose artifacts through Gemini: when Codex is building, committing, tagging, pushing, creating a PR, or publishing a GitHub release, PR bodies and release notes should be drafted or polished here, then fact-checked by Codex against local diff, tests, versions, checksums, links, and artifacts before publishing. It now adds task auto-detection, automatic style profile defaults, Gemini-authored task templates, safe git project-context collection, routing evals, and a source-grounding quality gate for prose work while leaving coding, debugging, and architectural judgment to Codex.",
     "developerName": "Park Chanwoo",
     "category": "Productivity",
     "websiteURL": "https://github.com/Meapri/gemini-writing-copilot",
@@ -31,6 +31,7 @@
     "defaultPrompt": [
       "Polish this paragraph in natural Korean.",
       "Draft release notes from this change summary.",
+      "Polish this GitHub release body before publishing.",
       "Write a PR description from these changes."
     ]
   }

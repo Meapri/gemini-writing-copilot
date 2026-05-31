@@ -22,6 +22,8 @@ Do not wait for the user to say "Gemini" or "use the plugin". Gather the needed 
 
 If the user asks for code plus prose in one request, keep code implementation and engineering judgment in Codex. Use Gemini only for the prose artifact, such as a PR body, README section, commit summary, or release note.
 
+When a mixed publish flow includes building, committing, tagging, pushing, creating a PR, or creating/editing a GitHub release, route every public-facing prose artifact through this skill before publication. This includes PR bodies, release bodies, `gh release create --notes`, `gh release edit --notes`, changelogs, release summaries, and asset/download descriptions. Gemini drafts or polishes the wording; Codex must then verify all factual claims before publishing.
+
 ## When To Use
 
 Use the bundled Gemini writer for:
@@ -66,6 +68,7 @@ Prefer `--length`, `--tone`, `--audience`, and `--style-guide` when the request 
 For repository prose, prefer project context instead of asking the user to paste obvious local state:
 
 - PR descriptions and release notes: use `--project-context auto` or `--project-context git-diff` when diff details matter.
+- GitHub release bodies created during build/commit/tag/push flows: use `--task release-notes`, `--profile github-release`, and `--project-context auto`; use `--project-context git-diff` when the diff itself is the main source.
 - README/docs/proposals: use `--project-context auto`.
 - Sensitive or source-grounded output: keep the default `--quality-gate auto`; use `--quality-gate block` only when unsupported numbers/dates should fail the call.
 - Template-sensitive artifacts: keep `--template-mode auto`; use `--template-mode strict` when a recognizable structure is required.
@@ -227,6 +230,8 @@ For `--rewrite-strength`, prefer canonical values `light`, `medium`, or `heavy`.
 Do not paste Gemini output blindly. Review it as a draft, then adapt it to the user's exact request, local context, tone, and factual constraints.
 
 If Gemini invents facts, citations, dates, numbers, or claims not present in the input, remove them or mark them as unknown.
+
+For publishing prose, Codex remains responsible for facts. Before creating or editing a PR/release body, verify versions, tag names, commit hashes, test results, artifact names, checksums, links, dates, and any user-impact claims against local commands or GitHub output. Remove or correct anything Gemini inferred without evidence.
 
 If the request asks for final prose only, return final prose only. If the user asks for alternatives, produce a concise set of alternatives.
 
