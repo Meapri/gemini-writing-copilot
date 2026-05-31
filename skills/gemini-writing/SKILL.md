@@ -17,6 +17,7 @@ Use the bundled Gemini writer for:
 - Translating text
 - PR descriptions, release notes, README prose, docs prose
 - Emails, announcements, blog posts, planning docs, product copy
+- Product copy, proposals, and technical documentation prose
 
 Do not use it for:
 
@@ -112,14 +113,28 @@ Call Gemini through the script and read stdout as the candidate writing result:
 python3 /Users/naen/plugins/gemini-writing-copilot/scripts/gemini_write.py \
   --provider antigravity \
   --task polish \
+  --profile chanwoo-ko \
   --instruction "Make this concise and professional." \
   --tone "calm, direct, natural" \
   --audience "the intended reader" \
+  --output-mode final \
+  --preserve-voice medium \
+  --structure allow-restructure \
+  --rewrite-strength medium \
   --source-text "Text to improve"
 ```
 
 Available tasks:
 
+- `email`
+- `announcement`
+- `blog`
+- `pr-description`
+- `release-notes`
+- `readme`
+- `proposal`
+- `product-copy`
+- `technical-doc`
 - `draft`
 - `rewrite`
 - `polish`
@@ -130,12 +145,17 @@ Available tasks:
 
 Optional arguments:
 
+- `--profile`
 - `--context`
 - `--tone`
 - `--audience`
 - `--target-language`
 - `--length`
 - `--style-guide`
+- `--output-mode`
+- `--preserve-voice`
+- `--structure`
+- `--rewrite-strength`
 - `--variants`
 - `--format`
 - `--source-file`
@@ -143,6 +163,8 @@ Optional arguments:
 - `--think` (Gemini Web fallback only)
 
 The Antigravity provider uses whichever model is configured in `agy`. Model aliases such as `google/gemini-3.1-pro-high`, `gemini-3.5-flash-high`, `gemini-3.5-flash-medium`, and `gemini-3.5-flash-low` are still accepted by the Gemini Web fallback.
+
+Bundled profiles are `chanwoo-ko`, `professional-ko`, `github-release`, `email-polite`, and `product-copy-clear`. User profiles can be added under `~/.config/gemini-writing-copilot/profiles/`.
 
 ## Response Handling
 
@@ -152,4 +174,12 @@ If Gemini invents facts, citations, dates, numbers, or claims not present in the
 
 If the request asks for final prose only, return final prose only. If the user asks for alternatives, produce a concise set of alternatives.
 
-Prefer passing `--tone`, `--audience`, `--length`, and `--style-guide` when the user's request includes enough context. Use `--variants` only when the user asks for multiple options or when alternatives are clearly useful.
+Codex review checklist:
+
+- Does the output follow the requested format strictly?
+- Are all factual claims from the source preserved?
+- Is the tone appropriate for the selected profile?
+- Are there any missing placeholders that need user attention?
+- Is the text free of conversational filler?
+
+Prefer passing `--profile`, `--tone`, `--audience`, `--length`, `--output-mode`, `--preserve-voice`, `--structure`, `--rewrite-strength`, and `--style-guide` when the user's request includes enough context. Use `--variants` only when the user asks for multiple options or when alternatives are clearly useful.

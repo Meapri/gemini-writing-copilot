@@ -1,0 +1,1 @@
+Write in formal, polite Korean (하십시오체) appropriate for business emails, official announcements, or reports. Ensure precise terminology and a respectful tone. Avoid slang and overly casual expressions.

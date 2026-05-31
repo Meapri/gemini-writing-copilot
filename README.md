@@ -7,6 +7,9 @@ not use the Gemini CLI. Antigravity owns the Google login, account chooser,
 OAuth token refresh, and token storage; the plugin only sends a writing prompt
 through `agy --print` and returns the generated prose.
 
+The built-in writing guidance and style profiles were generated with Gemini
+3.1 Pro High and committed as deterministic defaults.
+
 ## What Is Included
 
 - `skills/gemini-writing/SKILL.md`: routing instructions for Codex
@@ -58,22 +61,49 @@ Cookie login options remain available:
 ```bash
 python3 scripts/gemini_write.py \
   --provider antigravity \
-  --task polish \
+  --task blog \
   --instruction "Make this warmer and more concise." \
+  --profile chanwoo-ko \
   --tone "calm, direct, natural" \
   --audience "maintainers" \
   --length "two short paragraphs" \
   --style-guide "Plain language. No hype." \
+  --output-mode final \
+  --preserve-voice medium \
+  --structure allow-restructure \
+  --rewrite-strength medium \
   --source-text "Draft text here"
 ```
 
 Useful composition controls:
 
+- `--task`: `draft`, `rewrite`, `polish`, `summarize`, `translate`, `outline`,
+  `email`, `announcement`, `blog`, `pr-description`, `release-notes`, `readme`,
+  `proposal`, `product-copy`, `technical-doc`, or `custom`
+- `--profile`: bundled or user style profile
 - `--tone`: voice and emotional register
 - `--audience`: target reader
 - `--length`: desired length or density
 - `--style-guide`: house style, do/don't rules, or examples to follow
+- `--output-mode`: `final`, `alternatives`, `edit-with-notes`, or `diff-summary`
+- `--preserve-voice`: `off`, `light`, `medium`, or `strong`
+- `--structure`: `preserve`, `allow-restructure`, or `restructure`
+- `--rewrite-strength`: `light`, `medium`, or `heavy`
 - `--variants`: number of distinct alternatives to generate
+
+Bundled style profiles:
+
+- `chanwoo-ko`
+- `professional-ko`
+- `github-release`
+- `email-polite`
+- `product-copy-clear`
+
+User profiles can be placed under:
+
+```text
+~/.config/gemini-writing-copilot/profiles/
+```
 
 ## Configuration
 
@@ -86,6 +116,7 @@ Environment variables:
 - `GEMINI_WRITING_THINK` (Gemini Web fallback only)
 - `GEMINI_WRITING_TIMEOUT_SEC`
 - `GEMINI_WRITING_PROXY`
+- `GEMINI_WRITING_STYLE_PROFILE_DIR`
 - `HTTPS_PROXY`
 
 Optional config file:

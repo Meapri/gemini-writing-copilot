@@ -14,6 +14,7 @@ APP_CONFIG_DIR = Path.home() / ".config" / APP_NAME
 DEFAULT_COOKIE_FILE = APP_CONFIG_DIR / "cookie.json"
 DEFAULT_CONFIG_FILE = APP_CONFIG_DIR / "config.json"
 DEFAULT_PROFILE_DIR = APP_CONFIG_DIR / "browser-profile"
+DEFAULT_STYLE_PROFILE_DIR = APP_CONFIG_DIR / "profiles"
 
 
 @dataclass(frozen=True)
@@ -29,6 +30,7 @@ class Settings:
     proxy: str | None
     config_file: Path
     profile_dir: Path
+    style_profile_dir: Path
 
 
 def _load_config_file(path: Path) -> dict:
@@ -61,6 +63,9 @@ def load_settings() -> Settings:
         os.environ.get("GEMINI_WRITING_COOKIE_FILE", config.get("cookie_file", DEFAULT_COOKIE_FILE))
     ).expanduser()
     profile_dir = Path(config.get("profile_dir", DEFAULT_PROFILE_DIR)).expanduser()
+    style_profile_dir = Path(
+        os.environ.get("GEMINI_WRITING_STYLE_PROFILE_DIR", config.get("style_profile_dir", DEFAULT_STYLE_PROFILE_DIR))
+    ).expanduser()
     provider = str(os.environ.get("GEMINI_WRITING_PROVIDER", config.get("provider", "antigravity"))).lower()
     if provider not in {"antigravity", "web", "auto"}:
         raise ValueError("GEMINI_WRITING_PROVIDER must be one of: antigravity, web, auto")
@@ -90,4 +95,5 @@ def load_settings() -> Settings:
         proxy=str(proxy) if proxy else None,
         config_file=config_file,
         profile_dir=profile_dir,
+        style_profile_dir=style_profile_dir,
     )

@@ -1,6 +1,6 @@
 {
   "name": "gemini-writing-copilot",
-  "version": "0.1.0+codex.20260531091539",
+  "version": "0.1.0+codex.20260531093551",
   "description": "Use Antigravity/Gemini as a local writing specialist from Codex skills and bundled scripts.",
   "author": {
     "name": "Park Chanwoo"
@@ -18,7 +18,7 @@
   "interface": {
     "displayName": "Gemini Writing Copilot",
     "shortDescription": "Call Antigravity/Gemini only for explicit writing tasks.",
-    "longDescription": "Gemini Writing Copilot routes explicit writing work through Google Antigravity's local agy CLI by default, with the older Gemini Web cookie client kept as a fallback. It uses a composition-aware prompt brief for drafts, rewriting, summarization, translation, PR notes, release notes, documentation prose, and other explicit writing work while leaving coding, debugging, and architectural judgment to Codex.",
+    "longDescription": "Gemini Writing Copilot routes explicit writing work through Google Antigravity's local agy CLI by default, with the older Gemini Web cookie client kept as a fallback. It uses Gemini-authored composition guidance, writing-specific tasks, style profiles, voice preservation modes, output contracts, and rewrite controls for prose work while leaving coding, debugging, and architectural judgment to Codex.",
     "developerName": "Park Chanwoo",
     "category": "Productivity",
     "capabilities": [

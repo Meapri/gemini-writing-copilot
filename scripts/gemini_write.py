@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -23,9 +24,18 @@ from gemini_web_minimal import (
 )
 from gemini_web_minimal.cookies import missing_required_cookies
 from gemini_web_minimal.settings import load_settings
+from gemini_web_minimal.writing_guidance import (
+    OUTPUT_MODE_GUIDANCE,
+    PRESERVE_VOICE_GUIDANCE,
+    REWRITE_STRENGTH_GUIDANCE,
+    STRUCTURE_MODE_GUIDANCE,
+    TASK_LABELS,
+)
 
 
-TASKS = ("draft", "rewrite", "polish", "summarize", "translate", "outline", "custom")
+TASKS = tuple(TASK_LABELS)
+PROFILE_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
+BUILTIN_PROFILE_DIR = PLUGIN_ROOT / "profiles"
 
 
 def parse_args() -> argparse.Namespace:
@@ -40,7 +50,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--target-language", default="")
     parser.add_argument("--length", default="")
     parser.add_argument("--style-guide", default="")
-    parser.add_argument("--variants", type=int, default=1)
+    parser.add_argument("--profile", action="append", default=[])
+    parser.add_argument("--profile-dir", default="")
+    parser.add_argument("--variants", type=int)
+    parser.add_argument("--output-mode", choices=tuple(OUTPUT_MODE_GUIDANCE), default="final")
+    parser.add_argument("--preserve-voice", choices=tuple(PRESERVE_VOICE_GUIDANCE), default="medium")
+    parser.add_argument(
+        "--structure",
+        dest="structure_mode",
+        choices=tuple(STRUCTURE_MODE_GUIDANCE),
+        default="allow-restructure",
+    )
+    parser.add_argument("--rewrite-strength", choices=tuple(REWRITE_STRENGTH_GUIDANCE), default="medium")
     parser.add_argument("--format", dest="output_format", default="")
     parser.add_argument("--model")
     parser.add_argument("--think", type=int)
@@ -71,6 +92,32 @@ def validate_prompt_inputs(args: argparse.Namespace, source_text: str) -> None:
     raise SystemExit(
         "Nothing to send to Gemini. Provide --instruction, --source-text, --source-file, or --context."
     )
+
+
+def _profile_filenames(name: str) -> list[str]:
+    if not PROFILE_NAME_RE.fullmatch(name):
+        raise ValueError(f"Invalid profile name: {name}")
+    return [name] if name.endswith(".md") else [name, f"{name}.md"]
+
+
+def load_style_profile(name: str, *, user_profile_dir: Path) -> str:
+    for base_dir in (user_profile_dir, BUILTIN_PROFILE_DIR):
+        for filename in _profile_filenames(name):
+            candidate = base_dir / filename
+            if candidate.is_file():
+                return candidate.read_text(encoding="utf-8").strip()
+    raise FileNotFoundError(f"Writing style profile not found: {name}")
+
+
+def build_style_guide(args: argparse.Namespace, settings) -> str:
+    profile_dir = Path(args.profile_dir).expanduser() if args.profile_dir else settings.style_profile_dir
+    sections: list[str] = []
+    for profile_name in args.profile:
+        profile_text = load_style_profile(profile_name, user_profile_dir=profile_dir)
+        sections.append(f"Profile {profile_name}:\n{profile_text}")
+    if args.style_guide.strip():
+        sections.append(args.style_guide.strip())
+    return "\n\n".join(sections)
 
 
 def cookie_ready(cookie_file: Path) -> bool:
@@ -144,6 +191,10 @@ def main() -> int:
     try:
         source_text = read_source_text(args)
         validate_prompt_inputs(args, source_text)
+        settings = load_settings()
+        variants = args.variants
+        if variants is None:
+            variants = 3 if args.output_mode == "alternatives" else 1
         prompt = build_writing_prompt(
             task=args.task,
             instruction=args.instruction,
@@ -153,9 +204,13 @@ def main() -> int:
             audience=args.audience,
             target_language=args.target_language,
             output_format=args.output_format,
-            style_guide=args.style_guide,
+            style_guide=build_style_guide(args, settings),
             length=args.length,
-            variants=args.variants,
+            variants=variants,
+            output_mode=args.output_mode,
+            preserve_voice=args.preserve_voice,
+            structure_mode=args.structure_mode,
+            rewrite_strength=args.rewrite_strength,
         )
 
         mock_response = os.environ.get("GEMINI_WRITING_MOCK_RESPONSE")
@@ -163,7 +218,6 @@ def main() -> int:
             print(mock_response)
             return 0
 
-        settings = load_settings()
         provider = resolve_provider(args, settings)
         if provider == "antigravity":
             if args.model or args.think is not None:

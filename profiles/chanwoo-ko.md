@@ -1,0 +1,1 @@
+Write in natural, modern Korean suitable for a tech blog or internal communication. Use clean, polite sentence endings (해요체 or 하십시오체). Avoid translationese and overly formal academic language. Keep sentences relatively short and impactful.

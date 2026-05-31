@@ -130,12 +130,20 @@ class GeminiWebMinimalTests(unittest.TestCase):
             length="two short paragraphs",
             style_guide="Plain language. No hype.",
             variants=3,
+            output_mode="edit-with-notes",
+            preserve_voice="strong",
+            structure_mode="preserve",
+            rewrite_strength="light",
         )
 
         self.assertIn("Composition principles:", prompt)
         self.assertIn("For Korean writing, prefer natural modern Korean", prompt)
-        self.assertIn("Keep the author's intent and voice", prompt)
-        self.assertIn("Produce 3 distinct options.", prompt)
+        self.assertIn("Correct minor errors without changing the core sentence structures.", prompt)
+        self.assertIn("Return the revised text followed by concise notes explaining key changes.", prompt)
+        self.assertIn("Strictly maintain the original voice", prompt)
+        self.assertIn("Maintain existing paragraph boundaries", prompt)
+        self.assertIn("Correct grammar and spelling while preserving sentence structure.", prompt)
+        self.assertIn("Requested variants:\n3", prompt)
         self.assertIn("Style guide:\nPlain language. No hype.", prompt)
         self.assertIn("Length:\ntwo short paragraphs", prompt)
         self.assertIn("Source text:\nrough text", prompt)
@@ -147,8 +155,43 @@ class GeminiWebMinimalTests(unittest.TestCase):
             target_language="English",
         )
 
-        self.assertIn("Translate meaning, tone, and intent", prompt)
+        self.assertIn("Convert the source text into the target language accurately.", prompt)
         self.assertIn("Target language:\nEnglish", prompt)
+
+    def test_build_writing_prompt_supports_specialized_task_and_output_mode(self):
+        prompt = build_writing_prompt(
+            task="pr-description",
+            context="Changed the login provider.",
+            output_mode="diff-summary",
+            rewrite_strength="heavy",
+        )
+
+        self.assertIn("Task: pr-description", prompt)
+        self.assertIn("Summarize the changes made in the pull request clearly.", prompt)
+        self.assertIn("Output a concise list of modifications made", prompt)
+        self.assertIn("Completely restructure paragraphs", prompt)
+
+    def test_writer_loads_builtin_and_user_style_profiles(self):
+        writer = load_script_module("_test_gemini_write_profiles", "gemini_write.py")
+        builtin = writer.load_style_profile("github-release", user_profile_dir=Path("/tmp/missing-profiles"))
+        self.assertIn("release notes", builtin)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            profile_dir = Path(tmp)
+            (profile_dir / "custom.md").write_text("Custom voice profile", encoding="utf-8")
+            args = SimpleNamespace(profile=["custom"], profile_dir=str(profile_dir), style_guide="Extra rule")
+            settings = SimpleNamespace(style_profile_dir=Path("/tmp/default-profiles"))
+
+            combined = writer.build_style_guide(args, settings)
+
+        self.assertIn("Profile custom:\nCustom voice profile", combined)
+        self.assertIn("Extra rule", combined)
+
+    def test_writer_rejects_unsafe_profile_names(self):
+        writer = load_script_module("_test_gemini_write_profile_safety", "gemini_write.py")
+
+        with self.assertRaises(ValueError):
+            writer.load_style_profile("../secret", user_profile_dir=Path("/tmp/missing-profiles"))
 
     def test_gemini_write_mock_outputs_body_only(self):
         env = os.environ.copy()
