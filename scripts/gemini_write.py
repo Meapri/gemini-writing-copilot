@@ -35,9 +35,11 @@ from gemini_web_minimal.writing_templates import TASK_TEMPLATES
 from gemini_web_minimal.writing_guidance import (
     OUTPUT_MODE_GUIDANCE,
     PRESERVE_VOICE_GUIDANCE,
+    REWRITE_STRENGTH_ALIASES,
     REWRITE_STRENGTH_GUIDANCE,
     STRUCTURE_MODE_GUIDANCE,
     TASK_LABELS,
+    normalize_rewrite_strength,
 )
 
 
@@ -68,7 +70,8 @@ def parse_args() -> argparse.Namespace:
         dest="structure_mode",
         choices=tuple(STRUCTURE_MODE_GUIDANCE),
     )
-    parser.add_argument("--rewrite-strength", choices=tuple(REWRITE_STRENGTH_GUIDANCE))
+    rewrite_strength_choices = tuple(REWRITE_STRENGTH_GUIDANCE) + tuple(REWRITE_STRENGTH_ALIASES)
+    parser.add_argument("--rewrite-strength", choices=rewrite_strength_choices)
     parser.add_argument("--format", dest="output_format", default="")
     parser.add_argument("--project-context", choices=("off", "auto", "git-summary", "git-diff"))
     parser.add_argument("--project-root", default=".")
@@ -154,6 +157,8 @@ def apply_routing_defaults(args: argparse.Namespace, source_text: str) -> str:
         args.structure_mode = defaults.structure_mode
     if args.rewrite_strength is None:
         args.rewrite_strength = defaults.rewrite_strength
+    else:
+        args.rewrite_strength = normalize_rewrite_strength(args.rewrite_strength)
     return task
 
 

@@ -18,6 +18,7 @@ from .quality import clean_candidate_output, review_output
 from .redaction import redact_secrets
 from .routing import defaults_for_task, infer_task, should_use_writing_skill
 from .secure_io import write_private_json
+from .writing_guidance import normalize_rewrite_strength
 
 __all__ = [
     "CookieData",
@@ -37,6 +38,7 @@ __all__ = [
     "infer_task",
     "load_cookie_file",
     "make_sapisidhash",
+    "normalize_rewrite_strength",
     "parse_cookie_text",
     "redact_secrets",
     "review_output",

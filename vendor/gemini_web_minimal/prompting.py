@@ -10,6 +10,7 @@ from .writing_guidance import (
     STRUCTURE_MODE_GUIDANCE,
     TASK_GUIDANCE,
     TASK_LABELS,
+    normalize_rewrite_strength,
 )
 from .writing_templates import POSITIONING_LINE, TASK_TEMPLATES
 
@@ -53,6 +54,7 @@ def build_writing_prompt(
     output_mode_guidance = OUTPUT_MODE_GUIDANCE.get(output_mode, OUTPUT_MODE_GUIDANCE["final"])
     preserve_voice_guidance = PRESERVE_VOICE_GUIDANCE.get(preserve_voice, PRESERVE_VOICE_GUIDANCE["medium"])
     structure_guidance = STRUCTURE_MODE_GUIDANCE.get(structure_mode, STRUCTURE_MODE_GUIDANCE["allow-restructure"])
+    rewrite_strength = normalize_rewrite_strength(rewrite_strength)
     rewrite_guidance = REWRITE_STRENGTH_GUIDANCE.get(rewrite_strength, REWRITE_STRENGTH_GUIDANCE["medium"])
     variants = max(1, int(variants or 1))
 

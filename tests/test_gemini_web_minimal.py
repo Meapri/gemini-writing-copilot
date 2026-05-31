@@ -26,6 +26,7 @@ from gemini_web_minimal import (
     friendly_error_message,
     infer_task,
     make_sapisidhash,
+    normalize_rewrite_strength,
     parse_cookie_text,
     redact_secrets,
     review_output,
@@ -185,6 +186,12 @@ class GeminiWebMinimalTests(unittest.TestCase):
         self.assertIn("Output a concise list of modifications made", prompt)
         self.assertIn("Completely restructure paragraphs", prompt)
 
+    def test_rewrite_strength_accepts_high_alias_for_heavy(self):
+        prompt = build_writing_prompt(task="rewrite", source_text="rough", rewrite_strength="high")
+
+        self.assertEqual(normalize_rewrite_strength("high"), "heavy")
+        self.assertIn("Completely restructure paragraphs", prompt)
+
     def test_routing_infers_task_and_defaults(self):
         self.assertTrue(should_use_writing_skill("릴리즈 노트 써줘"))
         self.assertFalse(should_use_writing_skill("이 버그 root cause 찾아줘"))
@@ -275,6 +282,29 @@ class GeminiWebMinimalTests(unittest.TestCase):
 
         self.assertEqual(proc.returncode, 0)
         self.assertEqual(proc.stdout, "Polished result\n")
+
+    def test_gemini_write_accepts_rewrite_strength_high_alias(self):
+        env = os.environ.copy()
+        env["GEMINI_WRITING_MOCK_RESPONSE"] = "Rewritten result"
+        proc = subprocess.run(
+            [
+                sys.executable,
+                str(PLUGIN_ROOT / "scripts" / "gemini_write.py"),
+                "--task",
+                "rewrite",
+                "--rewrite-strength",
+                "high",
+                "--source-text",
+                "rough text",
+            ],
+            check=False,
+            text=True,
+            capture_output=True,
+            env=env,
+        )
+
+        self.assertEqual(proc.returncode, 0)
+        self.assertEqual(proc.stdout, "Rewritten result\n")
 
     def test_antigravity_cli_cleans_output_and_passes_print_timeout(self):
         completed = SimpleNamespace(returncode=0, stdout="\x1b[32mAnswer\r\n", stderr="")

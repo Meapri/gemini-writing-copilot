@@ -220,6 +220,8 @@ The Antigravity provider uses whichever model is configured in `agy`. Model alia
 
 Bundled profiles are `chanwoo-ko`, `professional-ko`, `github-release`, `email-polite`, and `product-copy-clear`. User profiles can be added under `~/.config/gemini-writing-copilot/profiles/`.
 
+For `--rewrite-strength`, prefer canonical values `light`, `medium`, or `heavy`. The script also accepts `high` and normalizes it to `heavy` for compatibility, but Codex should use `heavy` in examples and generated commands.
+
 ## Response Handling
 
 Do not paste Gemini output blindly. Review it as a draft, then adapt it to the user's exact request, local context, tone, and factual constraints.

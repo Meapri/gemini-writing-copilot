@@ -111,6 +111,9 @@ python3 scripts/gemini_write.py --task rewrite --profile my-house-style --source
 - `--template-mode`: `auto`, `off`, or `strict`
 - `--no-auto-profile`: skip automatic profile selection
 
+`--rewrite-strength high` is accepted as a compatibility alias for `heavy`.
+Prefer `heavy` in documented commands.
+
 ## Project Context
 
 For source-sensitive tasks, `--project-context auto` collects a safe git summary

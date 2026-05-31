@@ -130,6 +130,9 @@ default profile. Source-sensitive tasks such as PR descriptions, release notes,
 README prose, technical docs, and proposals can collect safe git summary context
 automatically. Use `--project-context git-diff` when the actual patch is needed.
 
+`--rewrite-strength high` is accepted as a compatibility alias and normalized to
+`heavy`, but examples use the canonical `heavy` name.
+
 Bundled style profiles:
 
 - `chanwoo-ko`

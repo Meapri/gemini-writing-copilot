@@ -148,6 +148,19 @@ REWRITE_STRENGTH_GUIDANCE = {
     "heavy": "Completely restructure paragraphs and sentences to adopt a new tone or style.",
 }
 
+REWRITE_STRENGTH_ALIASES = {
+    "low": "light",
+    "normal": "medium",
+    "standard": "medium",
+    "high": "heavy",
+    "strong": "heavy",
+}
+
+
+def normalize_rewrite_strength(value: str | None) -> str:
+    raw = str(value or "medium").strip().lower()
+    return REWRITE_STRENGTH_ALIASES.get(raw, raw)
+
 CODEX_REVIEW_CHECKLIST = [
     "Does the output follow the requested format strictly?",
     "Are all factual claims from the source preserved?",
