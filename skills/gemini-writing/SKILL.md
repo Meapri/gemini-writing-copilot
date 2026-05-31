@@ -1,11 +1,26 @@
 ---
 name: gemini-writing
-description: "Use when the user explicitly asks for writing help that benefits from Gemini: drafting, rewriting, polishing tone, summarizing, translating, release notes, PR descriptions, README prose, emails, announcements, blog posts, or planning documents. Do not use for code implementation, debugging, refactoring decisions, security analysis, or architecture judgment."
+description: "Use proactively for prose deliverables: draft, rewrite, polish, translate, summarize, email, announcement, blog, product copy, proposal, docs prose, README text, PR description, release notes, commit or issue summary, and Korean/English tone work. Prefer this skill for style-sensitive wording unless the user says not to use Gemini. Do not use for code implementation, debugging, refactoring decisions, security analysis, or architecture judgment."
 ---
 
 # Gemini Writing
 
-Use this skill only for explicit writing work. Keep ordinary Codex engineering work in Codex.
+Use this skill proactively for explicit prose deliverables. Keep ordinary Codex engineering work in Codex.
+
+## Proactive Routing
+
+Default to this skill when the user's requested output is writing, even when the user does not mention Gemini.
+
+Use it for requests that ask Codex to:
+
+- Write, draft, compose, rewrite, polish, improve wording, make text natural, shorten, expand, translate, or summarize prose
+- Turn notes, code changes, diffs, issue context, or rough bullets into user-facing text
+- Prepare PR descriptions, release notes, commit summaries, README/docs prose, issue summaries, changelog entries, emails, announcements, blog posts, proposals, product copy, or planning documents
+- Adjust Korean or English tone, voice, clarity, density, formality, friendliness, or reader fit
+
+Do not wait for the user to say "Gemini" or "use the plugin". Gather the needed local context, choose the closest task/profile/options, run the bundled writer, then review the result before replying.
+
+If the user asks for code plus prose in one request, keep code implementation and engineering judgment in Codex. Use Gemini only for the prose artifact, such as a PR body, README section, commit summary, or release note.
 
 ## When To Use
 
@@ -26,6 +41,27 @@ Do not use it for:
 - Refactoring strategy
 - Security review
 - Deciding architecture or API design
+
+## Automatic Option Selection
+
+When the user does not specify options, choose conservative defaults from the request context:
+
+- Email or reply: `--task email`, `--profile email-polite`, `--output-mode final`
+- Announcement or notice: `--task announcement`, `--profile chanwoo-ko`, `--output-mode final`
+- Blog post or essay: `--task blog`, `--profile chanwoo-ko`, `--structure allow-restructure`
+- Product copy: `--task product-copy`, `--profile product-copy-clear`, `--rewrite-strength medium`
+- Proposal or planning document: `--task proposal`, `--profile professional-ko`, `--structure allow-restructure`
+- PR description, changelog, or issue summary: `--task pr-description`, `--profile github-release`
+- Release notes: `--task release-notes`, `--profile github-release`
+- README or documentation prose: `--task readme` or `--task technical-doc`, `--profile professional-ko`
+- Natural Korean polish: `--task polish`, `--profile chanwoo-ko`, `--preserve-voice medium`
+- Formal Korean business prose: `--task polish`, `--profile professional-ko`, `--preserve-voice light`
+- Translation: `--task translate`, pass `--target-language` when the user names one
+- Multiple alternatives: `--output-mode alternatives`, `--variants 3`
+- Edits with rationale: `--output-mode edit-with-notes`
+- Change summary only: `--output-mode diff-summary`
+
+Prefer `--length`, `--tone`, `--audience`, and `--style-guide` when the request gives enough signal. If the signal is ambiguous, choose a neutral, useful default instead of asking a setup question.
 
 ## Script Paths
 

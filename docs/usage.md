@@ -1,8 +1,14 @@
 # Usage
 
-Gemini Writing Copilot should be used only for explicit prose work. Codex keeps
-engineering decisions, code edits, debugging, security review, and architecture
-judgment in Codex.
+Gemini Writing Copilot should be used proactively whenever the requested
+deliverable is prose. The user does not need to mention Gemini; Codex should
+select this skill for writing artifacts and keep engineering decisions, code
+edits, debugging, security review, and architecture judgment in Codex.
+
+Typical proactive triggers include PR descriptions, release notes, README or
+docs prose, commit summaries, issue summaries, emails, announcements, blog
+posts, proposals, product copy, translation, summarization, and Korean/English
+tone polishing.
 
 ## Basic Calls
 

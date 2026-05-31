@@ -1,7 +1,7 @@
 {
   "name": "gemini-writing-copilot",
-  "version": "0.1.0+codex.20260531100440",
-  "description": "Use Antigravity/Gemini as a local writing specialist from Codex skills and bundled scripts.",
+  "version": "0.1.0+codex.20260531102016",
+  "description": "Proactively route Codex prose work to Antigravity/Gemini as a local writing specialist.",
   "author": {
     "name": "Park Chanwoo",
     "url": "https://github.com/Meapri"
@@ -19,8 +19,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Gemini Writing Copilot",
-    "shortDescription": "Call Antigravity/Gemini only for explicit writing tasks.",
-    "longDescription": "Gemini Writing Copilot routes explicit writing work through Google Antigravity's local agy CLI by default, with the older Gemini Web cookie client kept as a fallback. It uses Gemini-authored composition guidance, writing-specific tasks, style profiles, voice preservation modes, output contracts, and rewrite controls for prose work while leaving coding, debugging, and architectural judgment to Codex.",
+    "shortDescription": "Proactively route prose work to Antigravity/Gemini.",
+    "longDescription": "Gemini Writing Copilot makes Codex more willing to hand off prose deliverables to Google Antigravity's local agy CLI by default, with the older Gemini Web cookie client kept as a fallback. Its skill routing is tuned for drafting, rewriting, polishing, translation, summaries, docs prose, PR descriptions, release notes, emails, announcements, blog posts, proposals, and product copy. It uses Gemini-authored composition guidance, writing-specific tasks, style profiles, voice preservation modes, output contracts, and rewrite controls for prose work while leaving coding, debugging, and architectural judgment to Codex.",
     "developerName": "Park Chanwoo",
     "category": "Productivity",
     "websiteURL": "https://github.com/Meapri/gemini-writing-copilot",
@@ -29,9 +29,9 @@
       "Local scripts"
     ],
     "defaultPrompt": [
-      "Use Gemini to polish this text.",
+      "Polish this paragraph in natural Korean.",
       "Draft release notes from this change summary.",
-      "Translate this paragraph into Korean with a calm professional tone."
+      "Write a PR description from these changes."
     ]
   }
 }

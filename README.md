@@ -1,6 +1,6 @@
 # Gemini Writing Copilot
 
-Codex personal plugin that calls Antigravity/Gemini only for explicit writing tasks.
+Codex personal plugin that proactively routes prose work to Antigravity/Gemini.
 
 The default provider is Google Antigravity's local `agy` CLI. This plugin does
 not use the Gemini CLI. Antigravity owns the Google login, account chooser,
@@ -9,6 +9,11 @@ through `agy --print` and returns the generated prose.
 
 The built-in writing guidance and style profiles were generated with Gemini
 3.1 Pro High and committed as deterministic defaults.
+
+Codex should invoke this skill when the deliverable is prose. You do not need
+to say "use Gemini"; the skill description and routing rules are tuned so
+Codex chooses Gemini Writing Copilot for writing artifacts while keeping
+engineering judgment in Codex.
 
 ## What Is Included
 
