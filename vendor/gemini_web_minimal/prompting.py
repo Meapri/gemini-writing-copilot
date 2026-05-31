@@ -11,6 +11,7 @@ from .writing_guidance import (
     TASK_GUIDANCE,
     TASK_LABELS,
 )
+from .writing_templates import POSITIONING_LINE, TASK_TEMPLATES
 
 
 def _clean(value: object) -> str:
@@ -43,6 +44,9 @@ def build_writing_prompt(
     preserve_voice: str = "medium",
     structure_mode: str = "allow-restructure",
     rewrite_strength: str = "medium",
+    task_template: str | None = "",
+    project_context: str = "",
+    strict_source: bool = False,
 ) -> str:
     task_label = TASK_LABELS.get(task, TASK_LABELS["custom"])
     task_guidance = TASK_GUIDANCE.get(task, TASK_GUIDANCE["custom"])
@@ -56,6 +60,9 @@ def build_writing_prompt(
         "You are a writing specialist called by Codex for prose work only.",
         "Your job is to produce finished writing that Codex can review and hand back to the user.",
         "",
+        "Plugin positioning:",
+        POSITIONING_LINE,
+        "",
         f"Task: {task_label}",
         "",
         "Composition principles:",
@@ -63,19 +70,46 @@ def build_writing_prompt(
         "",
         "Task-specific guidance:",
         _format_bullets(task_guidance),
-        "",
-        "Output contract:",
-        output_mode_guidance,
-        "",
-        "Voice preservation:",
-        preserve_voice_guidance,
-        "",
-        "Structure mode:",
-        structure_guidance,
-        "",
-        "Rewrite strength:",
-        rewrite_guidance,
     ]
+
+    if task_template is not None:
+        template = task_template.strip()
+        if not template and task in TASK_TEMPLATES:
+            template = _format_bullets(TASK_TEMPLATES[task])
+        if template:
+            parts.extend(["", "Task template:", template])
+
+    if strict_source:
+        parts.extend(
+            [
+                "",
+                "Source-grounding contract:",
+                _format_bullets(
+                    [
+                        "Do not invent features, dates, numbers, tests, names, links, or claims not present in the source/context.",
+                        "Use placeholders in square brackets when required facts are missing.",
+                        "Preserve uncertainty instead of making unsupported claims sound certain.",
+                    ]
+                ),
+            ]
+        )
+
+    parts.extend(
+        [
+            "",
+            "Output contract:",
+            output_mode_guidance,
+            "",
+            "Voice preservation:",
+            preserve_voice_guidance,
+            "",
+            "Structure mode:",
+            structure_guidance,
+            "",
+            "Rewrite strength:",
+            rewrite_guidance,
+        ]
+    )
 
     if variants > 1:
         _add_section(parts, "Requested variants", str(variants))
@@ -88,6 +122,7 @@ def build_writing_prompt(
     _add_section(parts, "Length", _clean(length))
     _add_section(parts, "Style guide", _clean(style_guide))
     _add_section(parts, "Output format", _clean(output_format))
+    _add_section(parts, "Project context", _clean(project_context))
     _add_section(parts, "Source text", _clean(source_text))
 
     return "\n\n".join(parts).strip()

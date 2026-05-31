@@ -8,6 +8,7 @@ plugin can build prompts deterministically.
 from __future__ import annotations
 
 TASK_LABELS = {
+    "auto": "auto",
     "draft": "draft",
     "rewrite": "rewrite",
     "polish": "polish",

@@ -1,0 +1,72 @@
+[
+  {
+    "request": "이 변경사항으로 PR 설명 써줘",
+    "should_use": true,
+    "task": "pr-description"
+  },
+  {
+    "request": "Draft release notes from the current diff.",
+    "should_use": true,
+    "task": "release-notes"
+  },
+  {
+    "request": "README 설치 섹션 자연스럽게 정리해줘",
+    "should_use": true,
+    "task": "readme"
+  },
+  {
+    "request": "고객에게 보낼 메일 초안 작성해줘",
+    "should_use": true,
+    "task": "email"
+  },
+  {
+    "request": "이 문장 한국어로 자연스럽게 다듬어줘",
+    "should_use": true,
+    "task": "polish"
+  },
+  {
+    "request": "Translate this paragraph into English.",
+    "should_use": true,
+    "task": "translate"
+  },
+  {
+    "request": "회의록 요약해줘",
+    "should_use": true,
+    "task": "summarize"
+  },
+  {
+    "request": "제품 랜딩 카피 3개 만들어줘",
+    "should_use": true,
+    "task": "product-copy"
+  },
+  {
+    "request": "블로그 글 초안 써줘",
+    "should_use": true,
+    "task": "blog"
+  },
+  {
+    "request": "이 기능 문서화해줘",
+    "should_use": true,
+    "task": "technical-doc"
+  },
+  {
+    "request": "이 버그 root cause 찾아줘",
+    "should_use": false,
+    "task": "draft"
+  },
+  {
+    "request": "리팩터링 구현해줘",
+    "should_use": false,
+    "task": "draft"
+  },
+  {
+    "request": "보안 취약점 리뷰해줘",
+    "should_use": false,
+    "task": "draft"
+  },
+  {
+    "request": "코드는 고치고, PR 설명도 같이 써줘",
+    "should_use": true,
+    "task": "pr-description"
+  }
+]

@@ -28,6 +28,10 @@ class Settings:
     retry_attempts: int
     retry_delay_sec: float
     proxy: str | None
+    project_context: str
+    max_project_context_chars: int
+    quality_gate: str
+    template_mode: str
     config_file: Path
     profile_dir: Path
     style_profile_dir: Path
@@ -83,6 +87,21 @@ def load_settings() -> Settings:
         or os.environ.get("HTTPS_PROXY")
         or os.environ.get("HTTP_PROXY")
     )
+    project_context = str(
+        os.environ.get("GEMINI_WRITING_PROJECT_CONTEXT", config.get("project_context", "auto"))
+    ).lower()
+    if project_context not in {"off", "auto", "git-summary", "git-diff"}:
+        raise ValueError("GEMINI_WRITING_PROJECT_CONTEXT must be one of: off, auto, git-summary, git-diff")
+    max_project_context_chars = _get_int(
+        os.environ.get("GEMINI_WRITING_MAX_PROJECT_CONTEXT_CHARS", config.get("max_project_context_chars")),
+        12000,
+    )
+    quality_gate = str(os.environ.get("GEMINI_WRITING_QUALITY_GATE", config.get("quality_gate", "auto"))).lower()
+    if quality_gate not in {"off", "auto", "warn", "block"}:
+        raise ValueError("GEMINI_WRITING_QUALITY_GATE must be one of: off, auto, warn, block")
+    template_mode = str(os.environ.get("GEMINI_WRITING_TEMPLATE_MODE", config.get("template_mode", "auto"))).lower()
+    if template_mode not in {"off", "auto", "strict"}:
+        raise ValueError("GEMINI_WRITING_TEMPLATE_MODE must be one of: off, auto, strict")
     return Settings(
         cookie_file=cookie_file,
         provider=provider,
@@ -93,6 +112,10 @@ def load_settings() -> Settings:
         retry_attempts=retry_attempts,
         retry_delay_sec=retry_delay,
         proxy=str(proxy) if proxy else None,
+        project_context=project_context,
+        max_project_context_chars=max_project_context_chars,
+        quality_gate=quality_gate,
+        template_mode=template_mode,
         config_file=config_file,
         profile_dir=profile_dir,
         style_profile_dir=style_profile_dir,

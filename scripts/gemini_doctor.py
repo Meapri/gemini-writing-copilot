@@ -67,6 +67,9 @@ def main() -> int:
     print(f"Gemini Web fallback model: {settings.model}")
     print(f"Think: {settings.think if settings.think is not None else 'model default'}")
     print(f"Proxy: {'configured' if settings.proxy else 'not configured'}")
+    print(f"Project context: {settings.project_context}")
+    print(f"Quality gate: {settings.quality_gate}")
+    print(f"Template mode: {settings.template_mode}")
 
     provider = settings.provider
     if provider == "auto":

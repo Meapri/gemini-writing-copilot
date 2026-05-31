@@ -18,7 +18,7 @@ Use it for requests that ask Codex to:
 - Prepare PR descriptions, release notes, commit summaries, README/docs prose, issue summaries, changelog entries, emails, announcements, blog posts, proposals, product copy, or planning documents
 - Adjust Korean or English tone, voice, clarity, density, formality, friendliness, or reader fit
 
-Do not wait for the user to say "Gemini" or "use the plugin". Gather the needed local context, choose the closest task/profile/options, run the bundled writer, then review the result before replying.
+Do not wait for the user to say "Gemini" or "use the plugin". Gather the needed local context, run the bundled writer, then review the result before replying. The writer now has `--task auto`, automatic profile defaults, task templates, project-context collection, and a quality gate, so Codex can omit low-confidence options and let the script choose conservative defaults.
 
 If the user asks for code plus prose in one request, keep code implementation and engineering judgment in Codex. Use Gemini only for the prose artifact, such as a PR body, README section, commit summary, or release note.
 
@@ -62,6 +62,13 @@ When the user does not specify options, choose conservative defaults from the re
 - Change summary only: `--output-mode diff-summary`
 
 Prefer `--length`, `--tone`, `--audience`, and `--style-guide` when the request gives enough signal. If the signal is ambiguous, choose a neutral, useful default instead of asking a setup question.
+
+For repository prose, prefer project context instead of asking the user to paste obvious local state:
+
+- PR descriptions and release notes: use `--project-context auto` or `--project-context git-diff` when diff details matter.
+- README/docs/proposals: use `--project-context auto`.
+- Sensitive or source-grounded output: keep the default `--quality-gate auto`; use `--quality-gate block` only when unsupported numbers/dates should fail the call.
+- Template-sensitive artifacts: keep `--template-mode auto`; use `--template-mode strict` when a recognizable structure is required.
 
 ## Script Paths
 
@@ -148,11 +155,14 @@ Call Gemini through the script and read stdout as the candidate writing result:
 ```bash
 python3 /Users/naen/plugins/gemini-writing-copilot/scripts/gemini_write.py \
   --provider antigravity \
-  --task polish \
+  --task auto \
   --profile chanwoo-ko \
   --instruction "Make this concise and professional." \
   --tone "calm, direct, natural" \
   --audience "the intended reader" \
+  --project-context auto \
+  --quality-gate auto \
+  --template-mode auto \
   --output-mode final \
   --preserve-voice medium \
   --structure allow-restructure \
@@ -162,6 +172,7 @@ python3 /Users/naen/plugins/gemini-writing-copilot/scripts/gemini_write.py \
 
 Available tasks:
 
+- `auto`
 - `email`
 - `announcement`
 - `blog`
@@ -194,6 +205,13 @@ Optional arguments:
 - `--rewrite-strength`
 - `--variants`
 - `--format`
+- `--project-context` (`off`, `auto`, `git-summary`, `git-diff`)
+- `--project-root`
+- `--max-project-context-chars`
+- `--quality-gate` (`off`, `auto`, `warn`, `block`)
+- `--strict-source` (`auto`, `off`, `on`)
+- `--template-mode` (`off`, `auto`, `strict`)
+- `--no-auto-profile`
 - `--source-file`
 - `--model` (Gemini Web fallback only)
 - `--think` (Gemini Web fallback only)

@@ -10,12 +10,15 @@ docs prose, commit summaries, issue summaries, emails, announcements, blog
 posts, proposals, product copy, translation, summarization, and Korean/English
 tone polishing.
 
+The CLI can also infer conservative defaults with `--task auto`. It selects a
+task, default profile, template guidance, source-grounding behavior, and safe
+project context mode where appropriate.
+
 ## Basic Calls
 
 ```bash
 python3 scripts/gemini_write.py \
-  --task polish \
-  --profile chanwoo-ko \
+  --task auto \
   --source-text "Draft text"
 ```
 
@@ -29,6 +32,7 @@ python3 scripts/gemini_write.py \
 
 ## Writing Tasks
 
+- `auto`
 - `draft`
 - `rewrite`
 - `polish`
@@ -45,6 +49,19 @@ python3 scripts/gemini_write.py \
 - `product-copy`
 - `technical-doc`
 - `custom`
+
+## Automatic Routing
+
+Use `--task auto` when the calling skill has enough natural-language signal but
+does not need to choose every option itself. The script infers tasks such as
+`pr-description`, `release-notes`, `readme`, `email`, `translate`, `summarize`,
+`product-copy`, and `polish`.
+
+Run the local routing acceptance set:
+
+```bash
+python3 scripts/evaluate_routing.py
+```
 
 ## Style Profiles
 
@@ -88,6 +105,33 @@ python3 scripts/gemini_write.py --task rewrite --profile my-house-style --source
 - `--structure`: `preserve`, `allow-restructure`, or `restructure`
 - `--rewrite-strength`: `light`, `medium`, or `heavy`
 - `--variants`: number of distinct alternatives
+- `--project-context`: `auto`, `off`, `git-summary`, or `git-diff`
+- `--quality-gate`: `auto`, `off`, `warn`, or `block`
+- `--strict-source`: `auto`, `off`, or `on`
+- `--template-mode`: `auto`, `off`, or `strict`
+- `--no-auto-profile`: skip automatic profile selection
+
+## Project Context
+
+For source-sensitive tasks, `--project-context auto` collects a safe git summary
+from the local repo: status, changed file names, diff stats, recent commits, and
+small metadata excerpts such as README or plugin manifest content.
+
+Use `--project-context git-diff` only when Gemini needs patch-level details.
+The diff is truncated by `--max-project-context-chars`.
+
+## Quality Gate
+
+`--quality-gate auto` cleans common model preambles and warns when the output
+contains unresolved placeholders, model meta-commentary, or numbers/dates not
+present in the provided source/context. Use `--quality-gate block` for stricter
+source-grounded artifacts.
+
+## Templates
+
+`--template-mode auto` injects Gemini-authored task templates for common writing
+artifacts. Use `--template-mode strict` when a recognizable structure is more
+important than freeform prose.
 
 ## Output Handling
 

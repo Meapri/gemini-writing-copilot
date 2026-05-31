@@ -21,11 +21,18 @@ sys.path.insert(0, str(PLUGIN_ROOT / "vendor"))
 from gemini_web_minimal import (
     GeminiWebError,
     build_writing_prompt,
+    clean_candidate_output,
+    defaults_for_task,
+    friendly_error_message,
+    infer_task,
     make_sapisidhash,
     parse_cookie_text,
     redact_secrets,
+    review_output,
     resolve_model,
+    should_use_writing_skill,
 )
+from gemini_web_minimal.project_context import collect_project_context, resolve_project_context_mode
 from gemini_web_minimal import antigravity_cli
 from gemini_web_minimal.protocol import build_payload, extract_response_text
 from gemini_web_minimal.secure_io import write_private_json
@@ -137,8 +144,11 @@ class GeminiWebMinimalTests(unittest.TestCase):
         )
 
         self.assertIn("Composition principles:", prompt)
+        self.assertIn("Plugin positioning:", prompt)
         self.assertIn("For Korean writing, prefer natural modern Korean", prompt)
         self.assertIn("Correct minor errors without changing the core sentence structures.", prompt)
+        self.assertIn("Task template:", prompt)
+        self.assertIn("문법 및 맞춤법 오류를 수정하십시오.", prompt)
         self.assertIn("Return the revised text followed by concise notes explaining key changes.", prompt)
         self.assertIn("Strictly maintain the original voice", prompt)
         self.assertIn("Maintain existing paragraph boundaries", prompt)
@@ -164,12 +174,64 @@ class GeminiWebMinimalTests(unittest.TestCase):
             context="Changed the login provider.",
             output_mode="diff-summary",
             rewrite_strength="heavy",
+            project_context="Git status:\n M scripts/gemini_write.py",
+            strict_source=True,
         )
 
         self.assertIn("Task: pr-description", prompt)
         self.assertIn("Summarize the changes made in the pull request clearly.", prompt)
+        self.assertIn("Source-grounding contract:", prompt)
+        self.assertIn("Project context:\nGit status:", prompt)
         self.assertIn("Output a concise list of modifications made", prompt)
         self.assertIn("Completely restructure paragraphs", prompt)
+
+    def test_routing_infers_task_and_defaults(self):
+        self.assertTrue(should_use_writing_skill("릴리즈 노트 써줘"))
+        self.assertFalse(should_use_writing_skill("이 버그 root cause 찾아줘"))
+        self.assertEqual(
+            infer_task(requested_task="auto", instruction="README 설치 섹션 정리해줘"),
+            "readme",
+        )
+        defaults = defaults_for_task("release-notes")
+        self.assertEqual(defaults.profiles, ("github-release",))
+
+    def test_quality_gate_cleans_meta_and_flags_unsupported_facts(self):
+        cleaned = clean_candidate_output("Here is the result:\nFinal text")
+        self.assertEqual(cleaned, "Final text")
+        report = review_output(
+            text="Released v2.0 on 2026-05-31.",
+            source_text="Released v1.0.",
+            task="release-notes",
+        )
+        self.assertIn("v2.0", report.issues[0])
+
+    def test_project_context_collects_git_summary_and_metadata(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            subprocess.run(["git", "init"], cwd=root, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            (root / "README.md").write_text("# Demo\n", encoding="utf-8")
+            subprocess.run(["git", "add", "README.md"], cwd=root, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(
+                ["git", "commit", "-m", "Initial"],
+                cwd=root,
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                env={**os.environ, "GIT_AUTHOR_NAME": "T", "GIT_AUTHOR_EMAIL": "t@example.com", "GIT_COMMITTER_NAME": "T", "GIT_COMMITTER_EMAIL": "t@example.com"},
+            )
+            (root / "README.md").write_text("# Demo\n\nChanged\n", encoding="utf-8")
+
+            context = collect_project_context(root=root, mode="git-summary", max_chars=4000)
+
+        self.assertIn("Git status:", context)
+        self.assertIn("README.md", context)
+        self.assertEqual(resolve_project_context_mode("release-notes", "auto"), "git-summary")
+        self.assertEqual(resolve_project_context_mode("blog", "auto"), "off")
+
+    def test_friendly_error_message_guides_repair(self):
+        message = friendly_error_message("Antigravity CLI (`agy`) was not found")
+
+        self.assertIn("Open or install Google Antigravity", message)
 
     def test_writer_loads_builtin_and_user_style_profiles(self):
         writer = load_script_module("_test_gemini_write_profiles", "gemini_write.py")

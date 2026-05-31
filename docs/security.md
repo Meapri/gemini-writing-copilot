@@ -40,6 +40,17 @@ Do not place secrets in:
 The repository `.gitignore` excludes common local secret and cache files, but
 users are responsible for reviewing local changes before publishing.
 
+## Project Context
+
+`--project-context auto` is designed to send a safe repository summary for
+source-sensitive prose tasks: git status, changed file names, diff stats, recent
+commit subjects, and short metadata excerpts. It does not include full patch
+content.
+
+`--project-context git-diff` includes patch excerpts and can contain private
+implementation details or accidentally committed secrets. Use it only when the
+writing task needs patch-level context.
+
 ## Network Behavior
 
 Default writing requests are sent through Antigravity's configured provider.
