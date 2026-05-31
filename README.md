@@ -20,6 +20,23 @@ The built-in writing guidance and style profiles were generated with Gemini
 
 No MCP server is included.
 
+## Install
+
+```bash
+git clone https://github.com/Meapri/gemini-writing-copilot.git
+cd gemini-writing-copilot
+codex plugin marketplace add "$(pwd)"
+codex plugin add gemini-writing-copilot@gemini-writing-copilot
+```
+
+Then start a new Codex thread so the skill is loaded.
+
+More details:
+
+- [Install](docs/install.md)
+- [Usage](docs/usage.md)
+- [Security](docs/security.md)
+
 ## Setup
 
 Requires Python 3.9 or newer.

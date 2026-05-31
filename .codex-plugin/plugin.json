@@ -1,11 +1,13 @@
 {
   "name": "gemini-writing-copilot",
-  "version": "0.1.0+codex.20260531093800",
+  "version": "0.1.0+codex.20260531100440",
   "description": "Use Antigravity/Gemini as a local writing specialist from Codex skills and bundled scripts.",
   "author": {
-    "name": "Park Chanwoo"
+    "name": "Park Chanwoo",
+    "url": "https://github.com/Meapri"
   },
-  "repository": "https://github.com/Sophomoresty/gemini-web2api",
+  "homepage": "https://github.com/Meapri/gemini-writing-copilot",
+  "repository": "https://github.com/Meapri/gemini-writing-copilot",
   "license": "MIT",
   "keywords": [
     "gemini",
@@ -21,6 +23,7 @@
     "longDescription": "Gemini Writing Copilot routes explicit writing work through Google Antigravity's local agy CLI by default, with the older Gemini Web cookie client kept as a fallback. It uses Gemini-authored composition guidance, writing-specific tasks, style profiles, voice preservation modes, output contracts, and rewrite controls for prose work while leaving coding, debugging, and architectural judgment to Codex.",
     "developerName": "Park Chanwoo",
     "category": "Productivity",
+    "websiteURL": "https://github.com/Meapri/gemini-writing-copilot",
     "capabilities": [
       "Writing",
       "Local scripts"
