@@ -22,6 +22,8 @@ No MCP server is included.
 
 ## Setup
 
+Requires Python 3.9 or newer.
+
 ### Default: Antigravity Login
 
 Install/open Google Antigravity so `agy` is available. The recommended writing

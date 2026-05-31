@@ -51,8 +51,8 @@ def main() -> int:
     failures = 0
 
     print(f"Python: {sys.version.split()[0]}")
-    if sys.version_info < (3, 10):
-        print("Python check: requires 3.10+")
+    if sys.version_info < (3, 9):
+        print("Python check: requires 3.9+")
         failures += 1
     else:
         print("Python check: ok")
