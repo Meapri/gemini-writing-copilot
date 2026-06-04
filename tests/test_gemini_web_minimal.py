@@ -354,6 +354,57 @@ class GeminiWebMinimalTests(unittest.TestCase):
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("Nothing to send to Gemini", proc.stderr)
 
+    def test_mcp_builds_structured_writer_command(self):
+        mcp = load_script_module("_test_gemini_writing_mcp_command", "gemini_writing_mcp.py")
+
+        command = mcp.build_writer_command(
+            {
+                "task": "release-notes",
+                "profile": ["github-release", "chanwoo-ko"],
+                "instruction": "Draft release notes.",
+                "source_text": "Added MCP support.",
+                "project_context": "auto",
+                "quality_gate": "auto",
+                "provider": "antigravity",
+            }
+        )
+
+        self.assertEqual(command[:2], [sys.executable, str(PLUGIN_ROOT / "scripts" / "gemini_write.py")])
+        self.assertIn("--task", command)
+        self.assertIn("release-notes", command)
+        self.assertEqual(command.count("--profile"), 2)
+        self.assertIn("github-release", command)
+        self.assertIn("chanwoo-ko", command)
+        self.assertIn("--provider", command)
+        self.assertIn("antigravity", command)
+
+    def test_mcp_tools_call_returns_writer_output(self):
+        mcp = load_script_module("_test_gemini_writing_mcp_call", "gemini_writing_mcp.py")
+        completed = subprocess.CompletedProcess(
+            args=["python3"],
+            returncode=0,
+            stdout="Polished result\n",
+            stderr="",
+        )
+
+        with mock.patch.object(mcp.subprocess, "run", return_value=completed) as run_mock:
+            response = mcp.handle_request(
+                {
+                    "jsonrpc": "2.0",
+                    "id": 7,
+                    "method": "tools/call",
+                    "params": {
+                        "name": "gemini_write",
+                        "arguments": {"task": "polish", "source_text": "Draft"},
+                    },
+                }
+            )
+
+        self.assertEqual(response["id"], 7)
+        self.assertEqual(response["result"]["content"][0]["text"], "Polished result")
+        self.assertFalse(response["result"]["isError"])
+        self.assertIn("--source-text", run_mock.call_args.args[0])
+
     def test_chrome_bridge_extension_is_domain_scoped(self):
         login = load_script_module("_test_gemini_login", "gemini_login.py")
         with tempfile.TemporaryDirectory() as tmp:

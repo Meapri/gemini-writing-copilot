@@ -14,6 +14,29 @@ The CLI can also infer conservative defaults with `--task auto`. It selects a
 task, default profile, template guidance, source-grounding behavior, and safe
 project context mode where appropriate.
 
+## MCP Tool
+
+Fresh Codex sessions with the plugin installed expose a `gemini_write` MCP tool.
+Use it for structured writing calls when available. The tool is a wrapper around
+the same local writer, so outputs remain drafts that Codex must review.
+
+Typical tool arguments:
+
+```json
+{
+  "task": "auto",
+  "instruction": "Make this warmer and more concise.",
+  "source_text": "Draft text",
+  "tone": "calm, direct, natural",
+  "project_context": "auto",
+  "quality_gate": "auto",
+  "provider": "antigravity"
+}
+```
+
+If the MCP tool is not available in the current thread, use the CLI fallback
+below. This can happen when the thread started before the plugin was refreshed.
+
 ## Basic Calls
 
 ```bash

@@ -1,6 +1,6 @@
 {
   "name": "gemini-writing-copilot",
-  "version": "0.2.1+codex.20260531111421",
+  "version": "0.2.1+codex.20260604040544",
   "description": "Proactively route Codex prose work, including release and PR publishing prose, to Antigravity/Gemini with auto context, templates, and quality checks.",
   "author": {
     "name": "Park Chanwoo",

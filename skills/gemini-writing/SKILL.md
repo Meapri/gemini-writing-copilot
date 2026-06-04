@@ -78,8 +78,19 @@ For repository prose, prefer project context instead of asking the user to paste
 Resolve paths relative to this skill directory:
 
 - Writer: `../../scripts/gemini_write.py`
+- MCP server: `../../scripts/gemini_writing_mcp.py`
 - Login helper: `../../scripts/gemini_login.py`
 - Doctor: `../../scripts/gemini_doctor.py`
+
+## Tool Path
+
+When the `gemini_write` MCP tool from this plugin is available, prefer it over
+manual shell execution. Pass structured arguments instead of building a shell
+command, then review the returned draft before replying or publishing.
+
+If the MCP tool is not available in the current Codex session, use the bundled
+writer script as the fallback. Do not block the writing workflow just because
+the current thread was started before the MCP server was installed or refreshed.
 
 ## Login
 
@@ -153,7 +164,28 @@ python3 /Users/naen/plugins/gemini-writing-copilot/scripts/gemini_doctor.py
 
 ## Writing Calls
 
-Call Gemini through the script and read stdout as the candidate writing result:
+Preferred MCP call shape:
+
+```json
+{
+  "task": "auto",
+  "profile": ["chanwoo-ko"],
+  "instruction": "Make this concise and professional.",
+  "tone": "calm, direct, natural",
+  "audience": "the intended reader",
+  "project_context": "auto",
+  "quality_gate": "auto",
+  "template_mode": "auto",
+  "output_mode": "final",
+  "preserve_voice": "medium",
+  "structure": "allow-restructure",
+  "rewrite_strength": "medium",
+  "source_text": "Text to improve",
+  "provider": "antigravity"
+}
+```
+
+Fallback script call:
 
 ```bash
 python3 /Users/naen/plugins/gemini-writing-copilot/scripts/gemini_write.py \

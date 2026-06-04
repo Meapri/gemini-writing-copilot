@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "gemini-writing-copilot": {
+      "command": "python3",
+      "args": ["./scripts/gemini_writing_mcp.py"]
+    }
+  }
+}
